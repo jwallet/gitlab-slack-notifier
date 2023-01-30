@@ -1,0 +1,6 @@
+**/.expo/
+**/node_modules/
+**/web-build/
+**/web-build-stats.json
+
+const.go
