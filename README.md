@@ -33,8 +33,4 @@
     1. `users:read.email` to fetch user info from SLACK API
     1. `incoming-webhook` (optional) if this bot is used by GitLab to post to the channel (gitlab) 
 ### What's missing?
-This bot can be simplified by getting the user email from GitLab private API `GET:Users`, instead of using a formatter `formatFullnameToUserEmail()` and environment variable `USER_EMAIL_DOMAIN` to generate a user email. I did not implemented this yet since my business email format is based on the user fullname and this info was available through the public API.
-1. Before fetching a user info, implement a request to authenticate your bot on [GitLab API](https://docs.gitlab.com/ee/api/rest/)
-2. Fetch the `GET:Users` with `email=foo.bar@domain.com` as a query param along with your `access_token`
-3. Your response will have more data, including `user.email`
-4. Skip the rest of the code until the bot fetches the user from Slack API with an email, pass it there.
+If you self-host GitLab, this bot can be simplified by getting the user email from GitLab self-hosted API `GET:Users` with a oauth access token, instead of using a formatter `formatFullnameToUserEmail()` and environment variable `USER_EMAIL_DOMAIN` to generate a business user email. I did not implemented this yet since my business email format is based on the user fullname and this info was available through the public API. If you are in luck and everyone of your users have set their username properly and they match your business email, then you could just concat this value to your domain with trying to guess it.
