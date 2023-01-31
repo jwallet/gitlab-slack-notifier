@@ -9,7 +9,7 @@ type Environment string
 var USER_EMAIL_SPACE_REPLACER = "."
 
 var SLACK_BOT_NOTIFICATION_COLOR = "#0099CC"
-var SLACK_BOT_NOTIFICATION_GREATINGS = "You've been mentionned on GitLab"
+var SLACK_BOT_NOTIFICATION_GREATINGS = "You were mentionned on GitLab"
 
 // Environment variables
 
