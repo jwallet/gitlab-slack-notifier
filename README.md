@@ -1,6 +1,8 @@
 # GitLab to Slack Notifier
 #### Send a private message when a user is mentionned in comments
 
+![preview](./215661429-dd1b2944-4b9f-46a0-9d87-f06c4f05f5f9.png)
+
 ### What it does ?
 1. From the GitLab Slack Integration, it reads published ***comments/notes*** to the selected ***Slack channel*** of your Slack bot webhook.
      1. GitLab cannot publish to different channels from the Slack Integration; [opened issue](https://gitlab.com/gitlab-org/gitlab/-/issues/12895)
