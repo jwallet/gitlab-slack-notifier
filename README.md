@@ -35,8 +35,14 @@
     1. `users:read.email` to fetch user info from SLACK API
     1. `incoming-webhook` (optional) if this bot is used by GitLab to post to the channel (gitlab) 
 ### What's missing?
-This bot can be simplified by getting the user email from GitLab private API `GET:Users`, instead of using a formatter `formatFullnameToUserEmail()` and environment variable `USER_EMAIL_DOMAIN` to generate a user email. I did not implemented this yet since my business email format is based on the user fullname and this info was available through the public API.
-1. Before fetching a user info, implement a request to authenticate your bot on [GitLab API](https://docs.gitlab.com/ee/api/rest/)
-2. Fetch the `GET:Users` with `email=foo.bar@domain.com` as a query param along with your `access_token`
-3. Your response will have more data, including `user.email`
-4. Skip the rest of the code until the bot fetches the user from Slack API with an email, pass it there.
+Some other ways to get the user email directly from GitLab
+#### Self-hosted
+If you are self-hosting GitLab, then this bot can be simplified by getting the user email from GitLab self-hosted API `GET:Users` with an oauth access token, instead of using a formatter `formatFullnameToUserEmail()` and environment variable `USER_EMAIL_DOMAIN` and `USER_EMAIL_SPACE_REPLACER` to generate a business user email. I did not have to implement this because my business email format is based on the user fullname and this info was available through the public API.
+#### User.username is the same as my business email
+If you are in luck and everyone of your users have set their username `my.name` properly and they match your business email, then you could just concat this value to your domain. I was out of luck and had to fallback to the user fullname `My Name` and format it.
+#### Ask your users to set their Slack email as their GitLab public email
+If all users set a public email on their profile, you can fetch it one-by-one by using `GET:Users/:id` or by fetching all members of a group (your business) with your private token `GET:Groups/:groupId/members?private_token=ACCESS_TOKEN`.
+#### Still not working for you?
+Don't forget you can change the formatter that uses the user fullname in the code to make it match your business email. However, if all users are connected without a business email and on your Slack app as well, then it will be really hard for you to match the GitLab user to a Slack UserID. GitLab has some opened issues on that matter. 
+##### Make the bot smarter
+This is a long shot, but you can improve the bot by asking your Slack users to identify themself to the bot and connect their GitLab account to the bot so the bot can keep a Dictionary of `Dictionary<GitLabUserName, SlackUserId>` on a database. Just like `GitLab` app bot does, it adds an entry in your GitLab profile under `Chat` to have access to your GitLab profile, so no need to have your email since the bot already knows the Slack UserID since the connect-request came from their.
