@@ -7,16 +7,16 @@ import (
 func handle(event SlackEvent) error {
 	fmt.Println(event.Type)
 	if event.Type != "message" {
-		return fmt.Errorf("Bot can only handle messages.")
-	}
-	if event.Channel != SLACK_BOT_READ_CHANNEL {
-		return fmt.Errorf("Not monitoring the right channel, stopping.")
+		return fmt.Errorf("Bot can only handle messages, stopping.")
 	}
 	if event.Subtype != "bot_message" {
 		return fmt.Errorf("Not a message from a bot, stopping.")
 	}
 	if len(event.Attachments) == 0 {
 		return fmt.Errorf("No message found, no mention needed, stopping.")
+	}
+	if SLACK_BOT_READ_CHANNEL != "" && event.Channel != SLACK_BOT_READ_CHANNEL {
+		return fmt.Errorf("Not monitoring the right channel, stopping.")
 	}
 
 	comment := event.Attachments[0].Text

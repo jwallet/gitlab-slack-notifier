@@ -14,6 +14,7 @@ var SLACK_BOT_NOTIFICATION_GREATINGS = "You were mentionned on GitLab"
 // Environment variables
 
 var PORT int = getEnvInt("PORT")
-var SLACK_BOT_OAUTH_TOKEN = os.Getenv("SLACK_BOT_OAUTH_TOKEN")
-var SLACK_BOT_READ_CHANNEL = os.Getenv("SLACK_BOT_READ_CHANNEL")
-var USER_EMAIL_DOMAIN = os.Getenv("USER_EMAIL_DOMAIN") // "business.com"
+
+var SLACK_BOT_OAUTH_TOKEN string = os.Getenv("SLACK_BOT_OAUTH_TOKEN")
+var SLACK_BOT_READ_CHANNEL string = os.Getenv("SLACK_BOT_READ_CHANNEL")
+var USER_EMAIL_DOMAIN string = os.Getenv("USER_EMAIL_DOMAIN") // "gmail.com"
