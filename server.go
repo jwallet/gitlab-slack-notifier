@@ -48,8 +48,6 @@ func setupServer() {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(payload.Challenge))
 		}
-
-		w.WriteHeader(http.StatusOK)
 	})
 
 	// Determine port for HTTP service.
