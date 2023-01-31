@@ -21,6 +21,22 @@ func deburr(source string) (string, error) {
 	return output, nil
 }
 
+func getMergeRequestLinkToComment(text string) string {
+	selector := regexp.MustCompile(`<https://gitlab.com/.*?\|commented on merge request`)
+	tagURL := selector.FindString(text)
+	urlCleaner := strings.NewReplacer("<", "", "|commented on merge request", "")
+	return urlCleaner.Replace(tagURL)
+}
+
+func getAllUsernameTags(comment string) []string {
+	selector := regexp.MustCompile(`@\w+.?\w+`)
+	usernames := selector.FindAllString(comment, -1)
+	for i, username := range usernames {
+		usernames[i] = strings.Replace(username, "@", "", 1)
+	}
+	return usernames
+}
+
 func isEmailValid(e string) bool {
 	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	return emailRegex.MatchString(e)

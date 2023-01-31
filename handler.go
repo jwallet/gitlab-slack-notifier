@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 )
 
 func handle(event SlackEvent) error {
@@ -33,7 +31,7 @@ func handle(event SlackEvent) error {
 
 		botMessage := &BotMessage{
 			UserID:  userID,
-			Link:    getLink(event.Text),
+			Link:    getMergeRequestLinkToComment(event.Text),
 			Text:    comment,
 			Channel: event.Channel,
 			EventTS: event.TS,
@@ -43,22 +41,6 @@ func handle(event SlackEvent) error {
 	}
 
 	return nil
-}
-
-func getLink(text string) string {
-	selector := regexp.MustCompile(`<https://gitlab.com/.*?\|commented on merge request`)
-	tagURL := selector.FindString(text)
-	urlCleaner := strings.NewReplacer("<", "", "|commented on merge request", "")
-	return urlCleaner.Replace(tagURL)
-}
-
-func getAllUsernameTags(comment string) []string {
-	selector := regexp.MustCompile(`@\w+.?\w+`)
-	usernames := selector.FindAllString(comment, -1)
-	for i, username := range usernames {
-		usernames[i] = strings.Replace(username, "@", "", 1)
-	}
-	return usernames
 }
 
 func getUserID(username string) (string, error) {
