@@ -7,7 +7,7 @@ import (
 )
 
 func handle(event SlackEvent) error {
-	if event.Type == "C02HSU2AWN8" { // #random channel
+	if event.Type != SLACK_BOT_READ_CHANNEL {
 		return fmt.Errorf("Not monitoring the right channel, stopping.")
 	}
 	if event.Subtype != "bot_message" {
