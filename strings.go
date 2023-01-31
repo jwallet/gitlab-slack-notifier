@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 	"unicode"
 
 	"golang.org/x/text/runes"
@@ -17,4 +19,17 @@ func deburr(source string) (string, error) {
 		return source, err
 	}
 	return output, nil
+}
+
+func isEmailValid(e string) bool {
+	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	return emailRegex.MatchString(e)
+}
+
+func formatFullnameToUserEmail(username string) (string, error) {
+	removedAccents, err := deburr(strings.TrimSpace(username))
+	if err != nil {
+		return "", err
+	}
+	return strings.ReplaceAll(strings.ToLower(removedAccents), " ", USER_EMAIL_SPACE_REPLACER), nil
 }

@@ -19,7 +19,10 @@ func getEnvInt(key string) int {
 }
 
 func logEnvs() {
-	log.Printf(`Environment variables
-	- PORT: %v`,
-		PORT)
+	log.Printf(`Environment variables:
+	- PORT: %v
+	- SLACK_BOT_READ_CHANNEL: %v
+	- SLACK_BOT_OAUTH_TOKEN: %v
+	- USER_EMAIL_DOMAIN: %v`,
+		PORT, SLACK_BOT_READ_CHANNEL, SLACK_BOT_OAUTH_TOKEN, USER_EMAIL_DOMAIN)
 }

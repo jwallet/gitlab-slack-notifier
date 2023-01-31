@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 type SlackPayload struct {
@@ -56,11 +57,13 @@ type SlackReponse struct {
 }
 
 func fetchSlackUser(userEmail string) (*SlackUser, error) {
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
 	var user SlackUser
 
 	endpoint := fmt.Sprintf("https://slack.com/api/users.lookupByEmail?email=%s", userEmail)
-	req, err := http.NewRequest("GET", endpoint, nil)
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -71,27 +74,28 @@ func fetchSlackUser(userEmail string) (*SlackUser, error) {
 	fmt.Printf("Fetching user: %s\n", endpoint)
 
 	resp, err := client.Do(req)
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("GET user Failed %v", resp.StatusCode)
-	}
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("Reading GET user request")
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("GET user Failed %v", resp.StatusCode)
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("Casting GET user request")
+	client.CloseIdleConnections()
 	json.Unmarshal(body, &user)
-	fmt.Println(string(body))
 
-	if user.Ok == false {
+	if !user.Ok {
 		return nil, fmt.Errorf("Did not find a Slack user matching the email, exception %v", user.Error)
 	}
+
+	fmt.Printf("[%v] Slack userID: %v\n", user.Ok, user.User.Id)
 
 	return &user, nil
 }

@@ -23,60 +23,21 @@ type RequestPermalink struct {
 }
 
 func notify(message *BotMessage) error {
-	permalink, err := fetchPermalink(message)
-	if err != nil {
-		return err
-	}
-	message.Link = permalink
-	err = pushNotification(message)
-	return err
-}
-
-func fetchPermalink(message *BotMessage) (string, error) {
-	client := &http.Client{}
-	var requestLink RequestPermalink
-
-	endpoint := fmt.Sprintf("https://slack.com/api/chat.getPermalink?token=%s&channel=%s&message_ts=%s",
-		SLACK_BOT_OAUTH_TOKEN, message.Channel, message.EventTS)
-	req, err := http.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Printf("Fetching permalink: %s\n", endpoint)
-
-	resp, err := client.Do(req)
-	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("GET permalink Failed %v", resp.StatusCode)
-	}
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	fmt.Println("Reading GET permalink request")
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Println("Casting GET permalink request")
-	json.Unmarshal(body, &requestLink)
-
-	return requestLink.Permalink, nil
+	return pushNotification(message)
 }
 
 func pushNotification(message *BotMessage) error {
 	alert := strings.Join([]string{
 		fmt.Sprintf("<@%s>", message.UserID),
-		"Tu as été mentionné dans le channel `#_notifications`",
+		SLACK_BOT_NOTIFICATION_GREATINGS,
 	}, " ")
 
 	attachment := SlackAttachment{
-		Fallback: "Message originale: " + message.Link,
-		Text:     message.Text,
-		Footer:   message.Link,
+		Text:   message.Text,
+		Footer: message.Link,
+		Color:  SLACK_BOT_NOTIFICATION_COLOR,
 	}
+
 	attachmentData := &bytes.Buffer{}
 	enc := json.NewEncoder(attachmentData)
 	enc.SetEscapeHTML(false)
@@ -113,13 +74,12 @@ func pushNotification(message *BotMessage) error {
 	defer resp.Body.Close()
 
 	var response SlackReponse
-	fmt.Println("Reading POST notification request")
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Casting POST notification request")
+	client.CloseIdleConnections()
 	json.Unmarshal(body, &response)
 	fmt.Println(string(body))
 

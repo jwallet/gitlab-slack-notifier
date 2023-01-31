@@ -42,12 +42,14 @@ func setupServer() {
 		if payload.Type == "event_callback" {
 			err = handle(payload.Event)
 			if err != nil {
+				fmt.Println(err)
 				w.WriteHeader(http.StatusBadRequest)
 			}
 		} else if payload.Type == "url_verification" {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(payload.Challenge))
 		}
+		fmt.Println("---------------")
 	})
 
 	// Determine port for HTTP service.

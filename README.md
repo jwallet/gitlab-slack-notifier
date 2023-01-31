@@ -10,8 +10,8 @@
     >    _@that.guy I need your review._
 
 1. It will fetch from **GitLab** Open API, the user info to get its fullname. (_See the [**What's missing?**](#whats-missing), to retrieve the email directly_)
-   1. It will format his fullname to a user email name using `formatGitLabUsernameTag()` to a lowercase, dot separated format without diacritic, e.g.: Nathan Côté-Dumais → nathan.cote-dumais.
-   1. It will then use the environment variable `DOMAIN_EMAIL` to create a valid email, e.g.: nathan.cote-dumais → `nathan.cote-dumais@business.com`
+   1. It will format his fullname to a user email name using `formatFullnameToUserEmail()` to a lowercase, dot separated format without diacritic, e.g.: Nathan Côté-Dumais → nathan.cote-dumais.
+   1. It will then use the environment variable `USER_EMAIL_DOMAIN` to create a valid email, e.g.: nathan.cote-dumais → `nathan.cote-dumais@business.com`
 1. It will fetch from Slack API the user info using his email to then extract his userID, e.g.: `UA1BCDEF`.
 1. Finally, it will publish a private message notification to Slack to this user using his userID. The user will receive the notification from the bot itself in the Slack app section. 
 
@@ -23,12 +23,17 @@
     1. `PORT` Default to `3000`
     1. `SLACK_BOT_READ_CHANNEL` same as the webhook channel, the ID can be found by opening your Slack Workspace in Slack web app in a browser and getting it from the URL
     1. `SLACK_BOT_OAUTH_TOKEN` see your bot **Bot User OAuth Token** under **Install App** section
-    1. `DOMAIN_EMAIL` all user emails on the same email domain `@business.com`
+    1. `USER_EMAIL_DOMAIN` all user emails on the same email domain `@business.com`
 1. Go back to your bot, in the **Event subscriptions** and paste where you host this app `https://my.webservice.com/`
 1. Then, in the same section, _Subscribe to bot events_ by adding **message.channels** `Scope channels:history` to be able to read the channel where you receive GitLab comments.
-
+1. Go to **OAuth & Permissions**, scroll down to **Scopes**, and select these scopes:
+    1. `channels:history` to read the channel
+    1. `im:write` to notify a user
+    1. `users:read` to fetch user info from Slack API
+    1. `users:read.email` to fetch user info from SLACK API
+    1. `incoming-webhook` (optional) if this bot is used by GitLab to post to the channel (gitlab) 
 ### What's missing?
-This bot can be simplified by getting the user email from GitLab private API `GET:Users`, instead of using a formatter `formatGitLabUsernameTag()` and environment variable `USER_DOMAIN` to generate a user email. I did not implemented this yet since my business email format is based on the user fullname and this info was available through the public API.
+This bot can be simplified by getting the user email from GitLab private API `GET:Users`, instead of using a formatter `formatFullnameToUserEmail()` and environment variable `USER_EMAIL_DOMAIN` to generate a user email. I did not implemented this yet since my business email format is based on the user fullname and this info was available through the public API.
 1. Before fetching a user info, implement a request to authenticate your bot on [GitLab API](https://docs.gitlab.com/ee/api/rest/)
 2. Fetch the `GET:Users` with `email=foo.bar@domain.com` as a query param along with your `access_token`
 3. Your response will have more data, including `user.email`

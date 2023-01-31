@@ -23,9 +23,12 @@ func handle(event SlackEvent) error {
 
 	for _, username := range usernames {
 		userID, err := getUserID(username)
-		fmt.Printf("Got userID %v for username %v\n", userID, username)
 		if err != nil {
 			return err
+		}
+		fmt.Printf("Got userID %v for username %v\n", userID, username)
+		if userID == "" {
+			return fmt.Errorf("Did not find any user ID for %v", username)
 		}
 
 		botMessage := &BotMessage{
@@ -59,24 +62,47 @@ func getAllUsernameTags(comment string) []string {
 }
 
 func getUserID(username string) (string, error) {
-	// call gitlab with tag to retrieve email
-	gitLabUser, err := fetchBasicGitLabUser(username)
-	fmt.Println(gitLabUser)
+	// fetch user from GitLab that generate an email
+	userEmail, err := fetchGitLabUserToFormattedEmail(username)
 	if err != nil {
 		return "", err
 	}
-	usernameTag, err := formatGitLabUsernameTag(gitLabUser.Name)
-	if err != nil {
-		usernameTag = username
-		fmt.Printf("Cannot parse user name to tag: %v\n", err)
-	}
-	fmt.Println(usernameTag)
 
-	// call slack with email to retrieve id
-	slackUser, err := fetchSlackUser(usernameTag + "@" + DOMAIN_EMAIL)
+	if !isEmailValid(userEmail) {
+		return "", fmt.Errorf("User email is invalid")
+	}
+
+	// send query to Slack with email to retrieve the user ID
+	slackUser, err := fetchSlackUser(userEmail)
 	if err != nil {
 		return "", err
 	}
 
 	return slackUser.User.Id, nil
+}
+
+func fetchGitLabUserToFormattedEmail(username string) (string, error) {
+	// send query to gitlab with tag to retrieve user fullname
+	gitLabUser, err := fetchBasicGitLabUser(username)
+	fmt.Printf("GitLab user payload: %v\n", gitLabUser)
+	if err != nil {
+		return "", err
+	}
+
+	// user email is public
+	if gitLabUser.Email != "" {
+		return gitLabUser.Email, nil
+	}
+
+	// transform fullname to email username
+	usernameTag, err := formatFullnameToUserEmail(gitLabUser.Name)
+	if err != nil {
+		usernameTag = username
+		fmt.Printf("Cannot parse user name to tag: %v\n", err)
+	}
+
+	fmt.Printf("Fullname to email username: %v\n", usernameTag)
+
+	// generate full email
+	return usernameTag + "@" + USER_EMAIL_DOMAIN, nil
 }
