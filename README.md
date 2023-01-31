@@ -23,7 +23,7 @@
 1. Publish this repo and serve it as a web service
 1. Set the environment variables in `config.go`
     1. `PORT` Default to `3000`
-    1. `SLACK_BOT_READ_CHANNEL` same as the webhook channel, the ID can be found by opening your Slack Workspace in Slack web app in a browser and getting it from the URL
+    1. `SLACK_BOT_READ_CHANNEL` (optional) will monitor activity for a specific channel, the ID can be found by opening your Slack Workspace in Slack web app in a browser and getting it from the URL
     1. `SLACK_BOT_OAUTH_TOKEN` see your bot **Bot User OAuth Token** under **Install App** section
     1. `USER_EMAIL_DOMAIN` all user emails on the same email domain `@business.com`
 1. Go back to your bot, in the **Event subscriptions** and paste where you host this app `https://my.webservice.com/`
