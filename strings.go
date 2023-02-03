@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 	"unicode"
 
 	"golang.org/x/text/runes"
@@ -21,31 +19,13 @@ func deburr(source string) (string, error) {
 	return output, nil
 }
 
-func getMergeRequestLinkToComment(text string) string {
-	selector := regexp.MustCompile(`<https://gitlab.com/.*?\|commented on merge request`)
-	tagURL := selector.FindString(text)
-	urlCleaner := strings.NewReplacer("<", "", "|commented on merge request", "")
-	return urlCleaner.Replace(tagURL)
+func defaults(main string, fallback string) string {
+	return ternary(len(main) > 0, main, fallback)
 }
 
-func getAllUsernameTags(comment string) []string {
-	selector := regexp.MustCompile(`@\w+.?\w+`)
-	usernames := selector.FindAllString(comment, -1)
-	for i, username := range usernames {
-		usernames[i] = strings.Replace(username, "@", "", 1)
+func ternary(condition bool, yep string, nope string) string {
+	if condition {
+		return yep
 	}
-	return usernames
-}
-
-func isEmailValid(e string) bool {
-	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-	return emailRegex.MatchString(e)
-}
-
-func formatFullnameToUserEmail(username string) (string, error) {
-	removedAccents, err := deburr(strings.TrimSpace(username))
-	if err != nil {
-		return "", err
-	}
-	return strings.ReplaceAll(strings.ToLower(removedAccents), " ", USER_EMAIL_SPACE_REPLACER), nil
+	return nope
 }

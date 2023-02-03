@@ -8,12 +8,37 @@ import (
 	"time"
 )
 
+type GitLabWebhookEvent struct {
+	EventType    string             `json:"event_type"`
+	ObjectType   string             `json:"object_type"`
+	User         GitLabUser         `json:"user"`
+	Project      GitLabName         `json:"project"`
+	Note         GitLabNote         `json:"object_attributes"`
+	Repository   GitLabName         `json:"repository"`
+	MergeRequest GitLabMergeRequest `json:"merge_request"`
+}
+
 type GitLabUser struct {
 	Id       int32  `json:"id"`
 	Username string `json:"username"`
 	Name     string `json:"name"`
-	State    bool   `json:"state"`
+	State    bool   `json:"state,omitempty"`
 	Email    string `json:"email,omitempty"`
+}
+
+type GitLabName struct {
+	Name string `json:"name"`
+}
+
+type GitLabNote struct {
+	Note        string `json:"note"`
+	Description string `json:"description"`
+	Url         string `json:"url"`
+}
+
+type GitLabMergeRequest struct {
+	Description string `json:"description"`
+	Title       string `json:"title"`
 }
 
 const defaultQueryParams = "active=true&blocked=false&without_project_bots=true"
