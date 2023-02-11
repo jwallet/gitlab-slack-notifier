@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 type GitLabWebhookEvent struct {
@@ -53,9 +52,7 @@ func fetchGitLabUser(username string) (*GitLabUser, error) {
 }
 
 func fetchBasicGitLabUser(username string) (*GitLabUser, error) {
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	client := getClient()
 
 	endpoint := fmt.Sprintf("https://gitlab.com/api/v4/users?%s&username=%s", defaultQueryParams, username)
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
@@ -80,9 +77,9 @@ func fetchBasicGitLabUser(username string) (*GitLabUser, error) {
 		return nil, err
 	}
 
+	client.CloseIdleConnections()
 	var users []GitLabUser
 	json.Unmarshal(body, &users)
-	client.CloseIdleConnections()
 
 	if len(users) < 1 {
 		return nil, fmt.Errorf("No user found on GitLab with that username tag.")

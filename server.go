@@ -14,16 +14,18 @@ type Handshake struct {
 }
 
 func setupServer() {
-	log.Println("Starting server...")
+	log.Println("Setting up server")
 
-	http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/text")
-		w.Write([]byte("Check"))
-		fmt.Println("healthcheck")
+		w.Write([]byte("OK"))
+		log.Println("healthcheck")
 	})
 
-	http.HandleFunc("/gitlab-webhook", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/gitlab-webhook", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/text")
 
 		if r.Method != "POST" {
@@ -37,9 +39,9 @@ func setupServer() {
 		}
 
 		receivedSignature := r.Header.Get("X-Gitlab-Token")
-		log.Printf("Received Signature: %v", receivedSignature)
+		log.Printf("Received Signature: %v\n", receivedSignature)
 		if receivedSignature != GITLAB_WEBHOOK_SECRET_TOKEN {
-			log.Printf("Invalid secret token, received ''%v'', expected ''%v''", receivedSignature, GITLAB_WEBHOOK_SECRET_TOKEN)
+			log.Printf("Invalid secret token, received ''%v'', expected ''%v''\n", receivedSignature, GITLAB_WEBHOOK_SECRET_TOKEN)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -50,14 +52,14 @@ func setupServer() {
 		err = handleGitLabWebhook(webhookEvent)
 
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
 
 		fmt.Println("---------------")
 	})
 
-	http.HandleFunc("/slack-events", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/slack-events", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/text")
 
 		if r.Method != "POST" {
@@ -76,7 +78,7 @@ func setupServer() {
 		if payload.Type == "event_callback" {
 			err = handleSlackEvent(payload.Event)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				w.WriteHeader(http.StatusBadRequest)
 			}
 		} else if payload.Type == "url_verification" {
@@ -86,16 +88,27 @@ func setupServer() {
 		fmt.Println("---------------")
 	})
 
+	log.Println("Starting server...")
+
 	// Determine port for HTTP service.
 	port := PORT
-	fmt.Print(port)
+	log.Printf("Using port %v\n", port)
 	if port == 0 {
 		port = 3000
 		log.Printf("Defaulting to port %v\n", port)
 	}
 
-	log.Printf("Server listening on localhost:%v", port)
-	if err := http.ListenAndServe(":"+fmt.Sprint(port), nil); err != nil {
-		log.Fatal(err)
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%v", port),
+		Handler: mux,
 	}
+
+	server.SetKeepAlivesEnabled(false)
+
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("Server listening on localhost:%v\n", port)
 }

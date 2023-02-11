@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -24,7 +25,7 @@ func notify(message *BotMessage) error {
 }
 
 func pushNotification(event *BotMessage) error {
-	client := &http.Client{}
+	client := getClient()
 
 	payload := url.Values{}
 	payload.Set("token", SLACK_BOT_OAUTH_TOKEN)
@@ -59,7 +60,7 @@ func pushNotification(event *BotMessage) error {
 
 	client.CloseIdleConnections()
 	json.Unmarshal(body, &response)
-	fmt.Println(string(body))
+	log.Printf("Notifying Slack user with: %v\n", string(body))
 
 	if response.Ok == false {
 		return fmt.Errorf(response.Error)

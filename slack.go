@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 type SlackPayload struct {
@@ -57,9 +56,8 @@ type SlackReponse struct {
 }
 
 func fetchSlackUser(userEmail string) (*SlackUser, error) {
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	client := getClient()
+
 	var user SlackUser
 
 	endpoint := fmt.Sprintf("https://slack.com/api/users.lookupByEmail?email=%s", userEmail)

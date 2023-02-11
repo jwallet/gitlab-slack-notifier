@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -16,7 +17,7 @@ type Event struct {
 }
 
 func handleSlackEvent(slackEvent SlackEvent) error {
-	fmt.Println(slackEvent.Type)
+	log.Printf("Slack event: %v\n", slackEvent.Type)
 	if slackEvent.Type != "message" {
 		return fmt.Errorf("Bot can only handle slack event message, stopping.")
 	}
@@ -42,7 +43,7 @@ func handleSlackEvent(slackEvent SlackEvent) error {
 }
 
 func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
-	fmt.Println(gitLabEvent)
+	log.Printf("GitLab event: %v\n", gitLabEvent)
 	if gitLabEvent.EventType != "note" {
 		return fmt.Errorf("Bot can only handle gitlab webhook notes, stopping.")
 	}
