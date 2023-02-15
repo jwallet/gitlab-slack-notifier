@@ -98,7 +98,7 @@ func setupServer() {
 	port := PORT
 	log.Printf("Using port %v\n", port)
 	if port == 0 {
-		port = 3000
+		port = 8080
 		log.Printf("Defaulting to port %v\n", port)
 	}
 
