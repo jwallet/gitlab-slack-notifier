@@ -15,11 +15,19 @@ var (
 	mr       EventTextAlias
 )
 
+var (
+	selectorUsername = regexp.MustCompile(`@[^\s]+`)
+	selectorAllCaps   = regexp.MustCompile("([a-z0-9])([A-Z])")
+	selectorAuthor = regexp.MustCompile(`.*?(?P<author>{{author\|?(?P<authorFallback>.*?)}}).*?`)
+	selectorRepository = regexp.MustCompile(`.*?(?P<repository>{{repository\|?(?P<repositoryFallback>.*?)}}).*?`)
+	selectorMergeRequest = regexp.MustCompile(`.*?(?P<mergeRequest>{{mergeRequest\|?(?P<mergeRequestFallback>.*?)}}).*?`)
+	selectorAliasesFromComment = regexp.MustCompile(`^(?P<author>.*?) \((?P<username>.*?)\) \<(?P<link>https://gitlab\.com/.*?)\|commented on merge request !\d+\> in <https://gitlab\.com/.*?\|.*?\s.*?\s/\s(?P<repo>.*?)>: \*(?P<mr>.*?)\*$`)
+)
+
 func getAliasFromEventText(text string, alias EventTextAlias) string {
-	selector := regexp.MustCompile(`^(?P<athor>.*?) \((?P<username>.*?)\) \<(?P<link>https://gitlab\.com/.*?)\|commented on merge request !\d+\> in <https://gitlab\.com/.*?\|.*?\s.*?\s/\s(?P<repo>.*?)>: \*(?P<mr>.*?)\*$`)
-	matches := selector.FindStringSubmatch(text)
+	matches := selectorAliasesFromComment.FindStringSubmatch(text)
 	result := make(map[string]string)
-	for i, name := range selector.SubexpNames() {
+	for i, name := range selectorAliasesFromComment.SubexpNames() {
 		if i != 0 && name != "" {
 			result[name] = matches[i]
 		}
@@ -27,20 +35,24 @@ func getAliasFromEventText(text string, alias EventTextAlias) string {
 	return result[string(alias)]
 }
 
+func getUsernameTagsToDotCase(usernames []string) []string {
+	result := make([]string, 0)
+	for _, username := range usernames {
+		result = append(result, strings.ToLower(selectorAllCaps.ReplaceAllString(username, "${1}.${2}")))
+	}
+	return result
+}
+
 func getAllUsernameTags(comment string) []string {
-	selector := regexp.MustCompile(`@\w+.?\w+`)
-	usernames := selector.FindAllString(comment, -1)
+	usernames := selectorUsername.FindAllString(comment, -1)
 	for i, username := range usernames {
 		usernames[i] = strings.Replace(username, "@", "", 1)
 	}
-	return usernames
+	return distinct(usernames)
 }
 
 func getGreatings(event Event) string {
 	var text = SLACK_BOT_NOTIFICATION_GREATINGS
-	selectorAuthor := regexp.MustCompile(`.*?(?P<author>{{author\|?(?P<authorFallback>.*?)}}).*?`)
-	selectorRepository := regexp.MustCompile(`.*?(?P<repository>{{repository\|?(?P<repositoryFallback>.*?)}}).*?`)
-	selectorMergeRequest := regexp.MustCompile(`.*?(?P<mergeRequest>{{mergeRequest\|?(?P<mergeRequestFallback>.*?)}}).*?`)
 	author := selectorAuthor.FindStringSubmatch(text)
 	repository := selectorRepository.FindStringSubmatch(text)
 	mergeRequest := selectorMergeRequest.FindStringSubmatch(text)

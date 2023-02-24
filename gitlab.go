@@ -30,6 +30,7 @@ type GitLabName struct {
 }
 
 type GitLabNote struct {
+	Id          int32  `json:"id"`
 	Note        string `json:"note"`
 	Description string `json:"description"`
 	Url         string `json:"url"`

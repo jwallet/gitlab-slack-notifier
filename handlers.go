@@ -42,6 +42,8 @@ func handleSlackEvent(slackEvent SlackEvent) error {
 	return handle(event)
 }
 
+var previousNoteId int32 = 0
+
 func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 	log.Printf("GitLab event: %v\n", gitLabEvent)
 	if gitLabEvent.EventType != "note" {
@@ -50,6 +52,10 @@ func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 	if gitLabEvent.Note.Note == "" && gitLabEvent.Note.Description == "" {
 		return fmt.Errorf("No message found, no mention needed, stopping.")
 	}
+	if previousNoteId == gitLabEvent.Note.Id {
+		return fmt.Errorf("Bot prevented to proceed the same gitlab note id, stopping.")
+	}
+	previousNoteId = gitLabEvent.Note.Id
 
 	event := Event{
 		author:       gitLabEvent.User.Name,

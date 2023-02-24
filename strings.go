@@ -19,6 +19,20 @@ func deburr(source string) (string, error) {
 	return output, nil
 }
 
+func distinct(input []string) []string {
+	u := make([]string, 0, len(input))
+	m := make(map[string]bool)
+
+	for _, val := range input {
+		if _, ok := m[val]; !ok {
+			m[val] = true
+			u = append(u, val)
+		}
+	}
+
+	return u
+}
+
 func defaults(main string, fallback string) string {
 	return ternary(len(main) > 0, main, fallback)
 }
