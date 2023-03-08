@@ -55,7 +55,7 @@ func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 		return fmt.Errorf("Bot prevented to proceed the same gitlab note id, stopping.")
 	}
 	previousNoteId = gitLabEvent.Note.Id
-	log.Println("GitLab event passed validation")
+	fmt.Printf("GitLab event passed validation for note: %v", gitLabEvent.Note.Url)
 
 	event := Event{
 		author:       gitLabEvent.User.Name,
