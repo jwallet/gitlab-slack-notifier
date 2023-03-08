@@ -60,7 +60,7 @@ func pushNotification(event *BotMessage) error {
 
 	client.CloseIdleConnections()
 	json.Unmarshal(body, &response)
-	log.Printf("Notifying Slack user with: %v\n", string(body))
+	log.Printf("Notifying Slack user id: %v\n", string(event.UserID))
 
 	if response.Ok == false {
 		return fmt.Errorf(response.Error)
