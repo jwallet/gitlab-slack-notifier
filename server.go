@@ -14,8 +14,6 @@ type Handshake struct {
 }
 
 func setupServer() {
-	log.Println("Setting up server")
-
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +24,7 @@ func setupServer() {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/text")
 		w.Write([]byte("OK"))
-		log.Println("healthcheck")
+		fmt.Println("healthcheck")
 	})
 
 	mux.HandleFunc("/gitlab-webhook", func(w http.ResponseWriter, r *http.Request) {
@@ -43,9 +41,9 @@ func setupServer() {
 		}
 
 		receivedSignature := r.Header.Get("X-Gitlab-Token")
-		log.Printf("Received Signature: %v\n", receivedSignature)
+		fmt.Printf("Received Signature: %v\n", receivedSignature)
 		if receivedSignature != GITLAB_WEBHOOK_SECRET_TOKEN {
-			log.Printf("Invalid secret token, received ''%v'', expected ''%v''\n", receivedSignature, GITLAB_WEBHOOK_SECRET_TOKEN)
+			fmt.Printf("Invalid secret token, received ''%v'', expected ''%v''\n", receivedSignature, GITLAB_WEBHOOK_SECRET_TOKEN)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -92,14 +90,13 @@ func setupServer() {
 		fmt.Println("---------------")
 	})
 
-	log.Println("Starting server...")
+	fmt.Println("Starting server...")
 
 	// Determine port for HTTP service.
 	port := PORT
-	log.Printf("Using port %v\n", port)
 	if port == 0 {
 		port = 8080
-		log.Printf("Defaulting to port %v\n", port)
+		fmt.Printf("Defaulting to port %v\n", port)
 	}
 
 	server := &http.Server{
@@ -114,5 +111,5 @@ func setupServer() {
 		log.Fatalln(err)
 	}
 
-	log.Printf("Server listening on localhost:%v\n", port)
+	fmt.Printf("Server listening on localhost:%v\n", port)
 }

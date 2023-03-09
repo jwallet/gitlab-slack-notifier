@@ -41,8 +41,6 @@ func pushNotification(event *BotMessage) error {
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	fmt.Printf("Pushing notifiction: %s\n", endpoint)
-
 	resp, err := client.Do(req)
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("POST notification Failed %v", resp.StatusCode)
@@ -60,7 +58,7 @@ func pushNotification(event *BotMessage) error {
 
 	client.CloseIdleConnections()
 	json.Unmarshal(body, &response)
-	log.Printf("Notifying Slack user id: %v\n", string(event.UserID))
+	log.Printf("Bot is notifying Slack user id: %v\n", string(event.UserID))
 
 	if response.Ok == false {
 		return fmt.Errorf(response.Error)

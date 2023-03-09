@@ -61,7 +61,7 @@ func fetchBasicGitLabUser(username string) (*GitLabUser, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Fetching user: %s\n", endpoint)
+	fmt.Printf("Bot is fetching GitLab user profile: %s\n", endpoint)
 
 	resp, err := client.Do(req)
 	if err != nil {

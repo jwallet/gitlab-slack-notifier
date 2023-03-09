@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -16,8 +15,9 @@ type Event struct {
 	link         string
 }
 
+var previousEventTS string = ""
+
 func handleSlackEvent(slackEvent SlackEvent) error {
-	log.Printf("Slack event: %v\n", slackEvent.Type)
 	if slackEvent.Type != "message" {
 		return fmt.Errorf("Bot can only handle slack event message, stopping.")
 	}
@@ -30,6 +30,12 @@ func handleSlackEvent(slackEvent SlackEvent) error {
 	if SLACK_EVENT_READ_CHANNEL != "" && slackEvent.Channel != SLACK_EVENT_READ_CHANNEL {
 		return fmt.Errorf("Not monitoring the right channel, stopping.")
 	}
+	if slackEvent.TS == previousEventTS {
+		return fmt.Errorf("Bot prevented to proceed the same Slack event based on the timestamp %v, stopping.", slackEvent.TS)
+	}
+
+	previousEventTS = slackEvent.TS
+	fmt.Printf("Slack event passed validation for timestamp: %v", slackEvent.TS)
 
 	event := Event{
 		author:       getAliasFromEventText(slackEvent.Text, author),
@@ -52,8 +58,9 @@ func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 		return fmt.Errorf("No message found, no mention needed, stopping.")
 	}
 	if previousNoteId == gitLabEvent.Note.Id {
-		return fmt.Errorf("Bot prevented to proceed the same gitlab note id, stopping.")
+		return fmt.Errorf("Bot prevented to proceed the same gitlab note id ''%v'' with note url ''%v'', stopping.", gitLabEvent.Note.Id, gitLabEvent.Note.Url)
 	}
+
 	previousNoteId = gitLabEvent.Note.Id
 	fmt.Printf("GitLab event passed validation for note: %v", gitLabEvent.Note.Url)
 
@@ -70,16 +77,16 @@ func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 
 func handle(event Event) error {
 	usernames := getAllUsernameTags(event.message)
-	fmt.Printf("Got usernames: %v\n", usernames)
+	fmt.Printf("GitLab note usernames found: %v\n", usernames)
 
 	for _, username := range usernames {
 		userID, err := getUserID(username)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Got userID %v for username %v\n", userID, username)
+
 		if userID == "" {
-			return fmt.Errorf("Did not find any user ID for %v", username)
+			return fmt.Errorf("Bot did not find any user ID for %v", username)
 		}
 
 		greatings := strings.Join([]string{
@@ -121,7 +128,7 @@ func getUserID(username string) (string, error) {
 	}
 
 	if !isEmailValid(userEmail) {
-		return "", fmt.Errorf("User email is invalid")
+		return "", fmt.Errorf("User email %v is invalid", userEmail)
 	}
 
 	// send query to Slack with email to retrieve the user ID
@@ -136,7 +143,6 @@ func getUserID(username string) (string, error) {
 func fetchGitLabUserToFormattedEmail(username string) (string, error) {
 	// send query to gitlab with tag to retrieve user fullname
 	gitLabUser, err := fetchBasicGitLabUser(username)
-	fmt.Printf("GitLab user payload: %v\n", gitLabUser)
 	if err != nil {
 		return "", err
 	}
@@ -153,7 +159,7 @@ func fetchGitLabUserToFormattedEmail(username string) (string, error) {
 		fmt.Printf("Cannot parse user name to tag: %v\n", err)
 	}
 
-	fmt.Printf("Fullname to email username: %v\n", usernameTag)
+	fmt.Printf("GitLab user fullname to email username: %v\n", usernameTag)
 
 	// generate full email
 	return usernameTag + "@" + USER_EMAIL_DOMAIN, nil

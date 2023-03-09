@@ -30,7 +30,7 @@ type SlackEvent struct {
 	Type        string            `json:"type"`
 	Subtype     string            `json:"subtype"`
 	Text        string            `json:"text"`
-	TS          string            `json:"ts,omitempty"`
+	TS          string            `json:"ts"`
 	BotID       string            `json:"bot_id"`
 	Blocks      []SlackBlock      `json:"blocks,omitempty"`
 	Attachments []SlackAttachment `json:"attachments,omitempty"`
@@ -69,7 +69,7 @@ func fetchSlackUser(userEmail string) (*SlackUser, error) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Authorization", "Bearer "+SLACK_BOT_OAUTH_TOKEN)
 
-	fmt.Printf("Fetching user: %s\n", endpoint)
+	fmt.Printf("Bot is fetching Slack user profile: %s\n", endpoint)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -93,7 +93,7 @@ func fetchSlackUser(userEmail string) (*SlackUser, error) {
 		return nil, fmt.Errorf("Did not find a Slack user matching the email, exception %v", user.Error)
 	}
 
-	fmt.Printf("[%v] Slack userID: %v\n", user.Ok, user.User.Id)
+	fmt.Printf("Slack userID found ''%v'' for user ''%v'' (OK result %v)\n", user.User.Id, user.User.Profile.Email, user.Ok)
 
 	return &user, nil
 }

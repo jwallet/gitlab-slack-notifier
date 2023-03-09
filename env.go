@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -19,15 +20,15 @@ func getEnvInt(key string) int {
 }
 
 func logEnvs() {
-	log.Printf(`Environment variables:
-	- PORT: %v
-	- SLACK_BOT_OAUTH_TOKEN: %v
-	- SLACK_BOT_NOTIFICATION_COLOR: %v
-	- SLACK_BOT_NOTIFICATION_GREATINGS: %v
-	- GITLAB_WEBHOOK_SECRET_TOKEN: %v
-	- SLACK_EVENT_READ_CHANNEL: %v
-	- USER_EMAIL_DOMAIN: %v
-	- USER_EMAIL_SPACE_REPLACER: %v`,
+	fmt.Printf(`Environment variables:
+- PORT: %v
+- SLACK_BOT_OAUTH_TOKEN: %v
+- SLACK_BOT_NOTIFICATION_COLOR: %v
+- SLACK_BOT_NOTIFICATION_GREATINGS: %v
+- GITLAB_WEBHOOK_SECRET_TOKEN: %v
+- SLACK_EVENT_READ_CHANNEL: %v
+- USER_EMAIL_DOMAIN: %v
+- USER_EMAIL_SPACE_REPLACER: %v`,
 		PORT,
 		SLACK_BOT_OAUTH_TOKEN,
 		SLACK_BOT_NOTIFICATION_COLOR,
