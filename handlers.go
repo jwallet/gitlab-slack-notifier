@@ -35,7 +35,7 @@ func handleSlackEvent(slackEvent SlackEvent) error {
 	}
 
 	previousEventTS = slackEvent.TS
-	fmt.Printf("Slack event passed validation for timestamp: %v", slackEvent.TS)
+	fmt.Printf("Slack event passed validation for timestamp: %v\n", slackEvent.TS)
 
 	event := Event{
 		author:       getAliasFromEventText(slackEvent.Text, author),
@@ -62,7 +62,7 @@ func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 	}
 
 	previousNoteId = gitLabEvent.Note.Id
-	fmt.Printf("GitLab event passed validation for note: %v", gitLabEvent.Note.Url)
+	fmt.Printf("GitLab event passed validation for note: %v\n", gitLabEvent.Note.Url)
 
 	event := Event{
 		author:       gitLabEvent.User.Name,

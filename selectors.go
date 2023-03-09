@@ -16,11 +16,11 @@ var (
 )
 
 var (
-	selectorUsername = regexp.MustCompile(`@[^\s]+`)
-	selectorAllCaps   = regexp.MustCompile("([a-z0-9])([A-Z])")
-	selectorAuthor = regexp.MustCompile(`.*?(?P<author>{{author\|?(?P<authorFallback>.*?)}}).*?`)
-	selectorRepository = regexp.MustCompile(`.*?(?P<repository>{{repository\|?(?P<repositoryFallback>.*?)}}).*?`)
-	selectorMergeRequest = regexp.MustCompile(`.*?(?P<mergeRequest>{{mergeRequest\|?(?P<mergeRequestFallback>.*?)}}).*?`)
+	selectorUsername           = regexp.MustCompile(`@[^\s]+`)
+	selectorAllCaps            = regexp.MustCompile("([a-z0-9])([A-Z])")
+	selectorAuthor             = regexp.MustCompile(`.*?(?P<author>{{author\|?(?P<authorFallback>.*?)}}).*?`)
+	selectorRepository         = regexp.MustCompile(`.*?(?P<repository>{{repository\|?(?P<repositoryFallback>.*?)}}).*?`)
+	selectorMergeRequest       = regexp.MustCompile(`.*?(?P<mergeRequest>{{mergeRequest\|?(?P<mergeRequestFallback>.*?)}}).*?`)
 	selectorAliasesFromComment = regexp.MustCompile(`^(?P<author>.*?) \((?P<username>.*?)\) \<(?P<link>https://gitlab\.com/.*?)\|commented on merge request !\d+\> in <https://gitlab\.com/.*?\|.*?\s.*?\s/\s(?P<repo>.*?)>: \*(?P<mr>.*?)\*$`)
 )
 
