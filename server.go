@@ -41,7 +41,6 @@ func setupServer() {
 		}
 
 		receivedSignature := r.Header.Get("X-Gitlab-Token")
-		fmt.Printf("Received Signature: %v\n", receivedSignature)
 		if receivedSignature != GITLAB_WEBHOOK_SECRET_TOKEN {
 			fmt.Printf("Invalid secret token, received ''%v'', expected ''%v''\n", receivedSignature, GITLAB_WEBHOOK_SECRET_TOKEN)
 			w.WriteHeader(http.StatusUnauthorized)
