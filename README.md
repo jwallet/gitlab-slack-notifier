@@ -64,9 +64,9 @@ Now, the service has an event and it's ready to read it to then use the Slack bo
 ### Define the bot scopes
 #### Using the manifest when creating the bot
 <details>
-<summary><b>Manifest</b></summary>
+<summary><b>From an app manifest (_beta_)</b> while creating the bot</summary>
 
-Changes the sections wrap in [[brackets]]:
+Change the sections wrapped in `[[brackets]]`, then use it while creating the bot **From an app manifest**:
 
 ```yaml
 display_information:
@@ -112,7 +112,7 @@ settings:
 </details>
 
 <details>
-<summary><b>Using the scopes settings</b></summary>
+<summary><b>From the bot scopes settings</b></summary>
 
 Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes**, and select these scopes:
     1. `im:write` to notify a user
