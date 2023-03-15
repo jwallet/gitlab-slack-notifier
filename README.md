@@ -128,37 +128,51 @@ Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes
 
 
 ### The integration type is your choice...
-#### Slack Event integration
-If you prefer using Slack Event Integration solution:
-    1. Go to the **Install app** and create a webhook URL if not done yet.
-    1. Copy the webhook url to your GitLab repo settings:
-        > GitLab → Repo → Settings → Integrations → Slack Notifications Integration → Webhook URL
-    1. Configure what you will like to receive from GitLab in your Slack channel. GitLab only handle one channel at the moment ([they have an opened issue](https://gitlab.com/gitlab-org/gitlab/-/issues/12895)).
-    1. Go to the **Event subscriptions** and paste where you host this app `https://my.webservice.com/slack-events`
 
-    1. Then, in the same section, _Subscribe to bot events_ by adding **message.channels** `Scope channels:history` to be able to read the channel where you receive GitLab comments.
+#### Slack Event integration
+
+<details>
+    <summary><b>If you prefer using Slack Event Integration</b></summary>
+
+1. Go to the **Install app** and create a webhook URL if not done yet.
+1. Copy the webhook url to your GitLab repo settings:
+
+    > GitLab → Repo → Settings → Integrations → Slack Notifications Integration → Webhook URL
+1. Configure what you will like to receive from GitLab in your Slack channel. GitLab only handle one channel at the moment ([they have an opened issue](https://gitlab.com/gitlab-org/gitlab/-/issues/12895)).
+1. Go to the **Event subscriptions** and paste where you host this app `https://my.webservice.com/slack-events`
+1. Then, in the same section, _Subscribe to bot events_ by adding **message.channels** `Scope channels:history` to be able to read the channel where you receive GitLab comments.
+</details>
     
 #### Incoming Webhook integration
-If you prefer using the Incoming Webhook integration: 
-    1. Go to your GitLab repo settings
-        > GitLab → Repo → Settings → Webhooks → URL
-    1. Copy your webservice webhook endpoint (you might not need to add the port)
 
-        `http://my.webservice/gitlab-webhook`
-    1. Enter a `Secret token`, any phrase. Remember it. It will have to math the environment variable `GITLAB_WEBHOOK_SECRET_TOKEN`.
-    1. Select to receive, only the `Comments`.
-    1. Save the changes, and if the server is running, hit the button **Test > Comments**.
+<details>
+    <summary><b>If you prefer using the Incoming Webhook integration</b></summary>
 
+1. Go to your GitLab repo settings
+    > GitLab → Repo → Settings → Webhooks → URL
+1. Copy your webservice webhook endpoint (you might not need to add the port)
+
+    `http://my.webservice/gitlab-webhook`
+1. Enter a `Secret token`, any phrase. Remember it. It will have to math the environment variable `GITLAB_WEBHOOK_SECRET_TOKEN`
+1. Select to receive, only the `Comments`.
+1. Save the changes, and if the server is running, hit the button **Test > Comments**.
+
+</details>
 
 ### What's missing?
 Some other ways to get the user email directly from GitLab
+
 #### Self-hosted
 If you are self-hosting GitLab, then this bot can be simplified by getting the user email from GitLab self-hosted API `GET:Users` with an oauth access token, instead of using a formatter `formatFullnameToUserEmail()` and environment variable `USER_EMAIL_DOMAIN` and `USER_EMAIL_SPACE_REPLACER` to generate a business user email. I did not have to implement this because my business email format is based on the user fullname and this info was available through the public API.
+
 #### User.username is the same as your business email
 If you are in luck and everyone of your users have set their username `my.name` properly and they match your business email, then you could just concat this value to your domain. I was out of luck and had to fallback to the user fullname `My Name` and format it.
+
 #### Ask your users to set their Slack email as their GitLab public email
 If all users set a public email on their profile, you can fetch it one-by-one by using `GET:Users/:id` or by fetching all members of a group (your business) with your private token `GET:Groups/:groupId/members?private_token=ACCESS_TOKEN`.
+
 #### Still not working for you?
 Don't forget you can change the formatter that uses the user fullname in the code to make it match your business email. However, if all users are connected without a business email and on your Slack app as well, then it will be really hard for you to match the GitLab user to a Slack UserID. GitLab has some opened issues on that matter. 
+
 ##### Make the bot smarter
 You can improve the bot by asking your Slack users to identify themself to the bot and connect their GitLab account to the bot so the bot can keep a Dictionary of `Dictionary<GitLabUserName, SlackUserId>` and save it to a database. Just like `GitLab` app bot does, it has a bot home page [app_home_opened](https://api.slack.com/events/app_home_opened) event subscription, it adds an entry in your GitLab profile under [Chat](https://gitlab.com/-/profile/chat_names) to have access to your GitLab profile and store it. No need to fetch all emails since the bot already knows the Slack UserID because the connect-request came from there.
