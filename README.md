@@ -27,8 +27,10 @@ Now, the service has an event and it's ready to read it to then use the Slack bo
     > **Jeff Bezos** mentionned you on _Amazon : AMZ-1337 Fixed bad merge_   
         `*{{author}}* mentionned you on _{{repo}}: {{mergeRequest}}_`  
 
+---
+
 ## Setup
-1. Create a [Slack bot](https://api.slack.com/apps) using this [manifest](#using-the-manifest-when-creating-the-bot).
+1. Create a [Slack bot](https://api.slack.com/apps) using this [manifest](#using-the-manifest-when-creating-the-bot) (bot scopes section)
 1. Publish this repo and serve it as a web service
 1. Set the environment variables, available in `config.go`
     <details>
@@ -163,6 +165,8 @@ Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes
 1. Save the changes, and if the server is running, hit the button **Test > Comments**.
 
 </details>
+
+---
 
 ## What's missing?
 Some other ways to get the user email directly from GitLab
