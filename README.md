@@ -27,8 +27,8 @@ Now, the service has an event and it's ready to read it to then use the Slack bo
     > **Jeff Bezos** mentionned you on _Amazon : AMZ-1337 Fixed bad merge_   
         `*{{author}}* mentionned you on _{{repo}}: {{mergeRequest}}_`  
 
-### Setup
-1. Create a [Slack bot](https://api.slack.com/apps)
+## Setup
+1. Create a [Slack bot](https://api.slack.com/apps) using this [manifest](#using-the-manifest-when-creating-the-bot).
 1. Publish this repo and serve it as a web service
 1. Set the environment variables, available in `config.go`
     1. `PORT` (optional) Default to `3000`
@@ -59,14 +59,75 @@ Now, the service has an event and it's ready to read it to then use the Slack bo
         ```
 
         You may want to add a fallback word if GitLab does not return a value for a certain keyword using a pipe character `|` inside the keyword. `{{author|Someone}}`: will print "_Someone_" if the author is not found.
-1. Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes**, and select these scopes:
+
+
+### Define the bot scopes
+#### Using the manifest when creating the bot
+<details>
+<summary><b>Manifest</b></summary>
+
+Changes the sections wrap in [[brackets]]:
+
+```yaml
+display_information:
+  name: GitLabrador
+  description: Send you a private message when you are mentioned on GitLab
+  background_color: "#292961"
+  long_description: "This bot send you a private message when you are mentioned on GitLab.\r
+
+    \r
+
+    It finds you by matching your [[business]] email to your user fullname on GitLab, which makes a direct match with your Slack ID. IF the bot cannot communicate with you, valid that your GitLab fullname matches your [[business]] email alias.\r
+
+    \r
+
+    Exemple: John Doe, devient john.doe@domain.com\r
+
+    \r
+
+    https://github.com/jwallet/gitlab-slack-notifier 🌟"
+features:
+  bot_user:
+    display_name: GitLabrador
+    always_online: false
+oauth_config:
+  scopes:
+    bot:
+      - channels:history
+      - im:write
+      - incoming-webhook
+      - users:read
+      - users:read.email
+      - chat:write
+settings:
+  event_subscriptions:
+    request_url: https://[[webservice.host.com]]/slack-events
+    bot_events:
+      - message.channels
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
+```
+
+</details>
+
+<details>
+<summary><b>Using the scopes settings</b></summary>
+
+Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes**, and select these scopes:
     1. `im:write` to notify a user
     1. `chat:write` to write as himself on Slack
     1. `users:read` to fetch user info from Slack API
     1. `users:read.email` to fetch user info from SLACK API
     1. `channels:history` (optional, for slack events) to read the channel
     1. `incoming-webhook` (optional, for slack events) only, if you used this bot to let GitLab to post to the channel with it, in Slack Integrations.
-1. _If you prefer using Slack Event Integration solution_
+    
+</details>
+
+
+### The integration type is your choice...
+#### Slack Event integration
+If you prefer using Slack Event Integration solution:
     1. Go to the **Install app** and create a webhook URL if not done yet.
     1. Copy the webhook url to your GitLab repo settings:
         > GitLab → Repo → Settings → Integrations → Slack Notifications Integration → Webhook URL
@@ -74,7 +135,9 @@ Now, the service has an event and it's ready to read it to then use the Slack bo
     1. Go to the **Event subscriptions** and paste where you host this app `https://my.webservice.com/slack-events`
 
     1. Then, in the same section, _Subscribe to bot events_ by adding **message.channels** `Scope channels:history` to be able to read the channel where you receive GitLab comments.
-1. _If you prefer using the Incoming Webhook solution_ 
+    
+#### Incoming Webhook integration
+If you prefer using the Incoming Webhook integration: 
     1. Go to your GitLab repo settings
         > GitLab → Repo → Settings → Webhooks → URL
     1. Copy your webservice webhook endpoint (you might not need to add the port)
