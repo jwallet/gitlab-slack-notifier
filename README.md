@@ -116,12 +116,13 @@ settings:
 <summary><b>Manually add scopes to the bot after creation</b></summary>
 
 Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes**, and select these scopes:
-    1. `im:write` to notify a user
-    1. `chat:write` to write as himself on Slack
-    1. `users:read` to fetch user info from Slack API
-    1. `users:read.email` to fetch user info from SLACK API
-    1. `channels:history` (optional, for slack events) to read the channel
-    1. `incoming-webhook` (optional, for slack events) only, if you used this bot to let GitLab to post to the channel with it, in Slack Integrations.
+    
+1. `im:write` to notify a user
+1. `chat:write` to write as himself on Slack
+1. `users:read` to fetch user info from Slack API
+1. `users:read.email` to fetch user info from SLACK API
+1. `channels:history` (optional, for slack events) to read the channel
+1. `incoming-webhook` (optional, for slack events) only, if you used this bot to let GitLab to post to the channel with it, in Slack Integrations.
     
 </details>
 
