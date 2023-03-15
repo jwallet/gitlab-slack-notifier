@@ -7,13 +7,13 @@ The bot will map the `@user` tag in a GitLab comment to a user in Slack using hi
 
 ![preview](./215661429-dd1b2944-4b9f-46a0-9d87-f06c4f05f5f9.png)
 
-### How it connects
+### How it connects?
 1. **With GitLab Slack Integration, and Slack bot Events subscription**. GitLab will post all messages to a specific channel (all kind of message that you selected in your GitLab repo settings), then the bot will be notified by Slack that new messages appear in a Slack Channel and the bot will send an event to the webservice.
 1. **With GitLab Webhooks, and Slack Incoming webhook**. GitLab will send directly an event to the webservice.
 
 Now, the service has an event and it's ready to read it to then use the Slack bot to notify the user.
 
-### What it does with the event
+### What it does with the event?
 1. The service will try to find one or more mentions `@that.guy` in the comment sent by the author.
 
     _This Guy (this.guy) commented on merge request !1 in Project / Repo: MR_
