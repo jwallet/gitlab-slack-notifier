@@ -18,6 +18,7 @@ func setupServer() {
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/text")
 	})
 
 	mux.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
@@ -105,10 +106,10 @@ func setupServer() {
 
 	server.SetKeepAlivesEnabled(false)
 
+	fmt.Printf("Server listening on localhost:%v\n", port)
+
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	fmt.Printf("Server listening on localhost:%v\n", port)
 }
