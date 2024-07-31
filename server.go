@@ -81,7 +81,7 @@ func setupServer() {
 			err = handleSlackEvent(payload.Event)
 			if err != nil {
 				log.Println(err)
-				w.WriteHeader(http.StatusBadRequest)
+				w.WriteHeader(http.StatusNoContent)
 			}
 		} else if payload.Type == "url_verification" {
 			w.WriteHeader(http.StatusOK)
