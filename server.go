@@ -55,7 +55,7 @@ func setupServer() {
 
 		if err != nil {
 			log.Println(err)
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusNoContent)
 		}
 
 		fmt.Println("---------------")
