@@ -14,7 +14,7 @@ type SlackPayload struct {
 }
 
 type SlackAttachment struct {
-	Id       int16  `json:"id,omitempty"`
+	Id       int32  `json:"id,omitempty"`
 	Color    string `json:"color,omitempty"`
 	Fallback string `json:"fallback,omitempty"`
 	Text     string `json:"text,omitempty"`

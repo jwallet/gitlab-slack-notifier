@@ -48,7 +48,7 @@ func handleSlackEvent(slackEvent SlackEvent) error {
 	return handle(event)
 }
 
-var previousNoteId int32 = 0
+var previousNoteId int64 = 0
 
 func handleGitLabWebhook(gitLabEvent GitLabWebhookEvent) error {
 	if gitLabEvent.EventType != "note" {

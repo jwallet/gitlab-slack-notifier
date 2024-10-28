@@ -18,7 +18,7 @@ type GitLabWebhookEvent struct {
 }
 
 type GitLabUser struct {
-	Id       int32  `json:"id"`
+	Id       int64  `json:"id"`
 	Username string `json:"username"`
 	Name     string `json:"name"`
 	State    bool   `json:"state,omitempty"`
@@ -30,7 +30,7 @@ type GitLabName struct {
 }
 
 type GitLabNote struct {
-	Id          int32  `json:"id"`
+	Id          int64  `json:"id"`
 	Note        string `json:"note"`
 	Description string `json:"description"`
 	Url         string `json:"url"`
