@@ -3,7 +3,7 @@
 
 The bot will map the `@user` tag in a GitLab comment to a user in Slack using his fullname on GitLab and format it to a business email alias  based on custom environment variables.
 
-> `@gitlab.user` → _find the user full name_ → `User Name` → _format the full name to an email alias_ → `user.name` → _concat it with an email domain_ → `user.name@business.com` → _find the Slack user using his email_ → `U12345` → _send a notification_ → `@slackuser`
+> `@gitlab.user` → _find the user full name_ → `User Name` → _format the full name to an email alias using the defined spacer (using `.` here)_ → `user.name` → _concat it with an email domain_ → `user.name@business.com` → _find the Slack user using his email_ → `U12345` → _send a notification_ → `@slackuser`
 
 ![preview](./215661429-dd1b2944-4b9f-46a0-9d87-f06c4f05f5f9.png)
 
@@ -23,7 +23,7 @@ The bot will map the `@user` tag in a GitLab comment to a user in Slack using hi
     1. `SLACK_EVENT_READ_CHANNEL` (optional) It will monitor activities of a specific channel. The ID can be found by opening your Slack Workspace in the Slack web app and getting it from the URL
     1. `SLACK_BOT_OAUTH_TOKEN` The token is available in you Slack bot **Settings** → **Install App** → **Bot User OAuth Token**
     1. `USER_EMAIL_DOMAIN` Needed to format all user name to an email using this domain `@business.com`
-    1. `USER_EMAIL_SPACE_REPLACER` (optional) Needed to format the user name to an email alias. It replaces spaces by another char, like "_", default to ""
+    1. `USER_EMAIL_SPACE_REPLACER` (optional) Needed to format the user name to an email alias. It replaces spaces by another char, like "." Default to `""`, e.g.: *Foo Bar* → *foobar*
     1. `GITLAB_WEBHOOK_SECRET_TOKEN` Needed to receive event from GitLab webhook, set the same phrase in GitLab Secret token than this variable
     1. `SLACK_BOT_NOTIFICATION_COLOR` (optional) color of the notification border, `#0099CC`
     1. `SLACK_BOT_NOTIFICATION_GREATINGS` Message sent by your bot to the user, the bot passes 3 arguments to your string using keyword:
