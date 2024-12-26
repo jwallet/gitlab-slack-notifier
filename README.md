@@ -7,31 +7,14 @@ The bot will map the `@user` tag in a GitLab comment to a user in Slack using hi
 
 ![preview](./215661429-dd1b2944-4b9f-46a0-9d87-f06c4f05f5f9.png)
 
-### How it connects?
-1. **With GitLab Slack Integration, and Slack bot Events subscription**. GitLab will post all messages to a specific channel (all kind of message that you selected in your GitLab repo settings), then the bot will be notified by Slack that new messages appear in a Slack Channel and the bot will send an event to the webservice.
-1. **With GitLab Webhooks, and Slack Incoming webhook**. GitLab will send directly an event to the webservice.
-
-Now, the service has an event and it's ready to read it to then use the Slack bot to notify the user.
-
-### What it does with the event?
-1. The service will try to find one or more mentions `@that.guy` in the comment sent by the author.
-
-    _This Guy (this.guy) commented on merge request !1 in Project / Repo: MR_
-    >    _@that.guy I need your review._
-
-1. It will fetch from **GitLab** Open API, the user info to get its fullname. (_See the [**What's missing?**](#whats-missing), to retrieve the email directly_)
-   1. It will format his fullname to a user email alias using `formatFullnameToUserEmail()` and the environment variable `USER_EMAIL_SPACE_REPLACER` to a lowercase format without diacritic, e.g.: Nathan Côté-Dumais → nathan.cote-dumais.
-   1. It will then use the environment variable `USER_EMAIL_DOMAIN` to create a valid email, e.g.: nathan.cote-dumais → `nathan.cote-dumais@business.com`
-1. It will fetch from Slack API the user info using his email to then extract his userID, e.g.: `UA1BCDEF`.
-1. Finally, it will publish a private message notification to Slack to this user using his `userID`. The user will receive a notification from the bot itself in the Slack app section. _The message can be customized_     
-    > **Jeff Bezos** mentionned you on _Amazon : AMZ-1337 Fixed bad merge_   
-        `*{{author}}* mentionned you on _{{repo}}: {{mergeRequest}}_`  
-
 ---
 
 ## Setup
 1. Create a [Slack bot](https://api.slack.com/apps) using this [manifest](#using-the-manifest-when-creating-the-bot) (bot scopes section)
 1. Publish this repo and serve it as a web service
+   1. Clone this repo
+   1. Go to [Render.com](https://render.com/)
+   1. Create a free web service from this repo
 1. Set the environment variables, available in `config.go`
     <details>
         <summary><b>Environment vars</b></summary>
@@ -165,6 +148,28 @@ Go back to your bot page, go to **OAuth & Permissions**, scroll down to **Scopes
 1. Save the changes, and if the server is running, hit the button **Test > Comments**.
 
 </details>
+
+---
+
+### How it connects?
+1. **With GitLab Slack Integration, and Slack bot Events subscription**. GitLab will post all messages to a specific channel (all kind of message that you selected in your GitLab repo settings), then the bot will be notified by Slack that new messages appear in a Slack Channel and the bot will send an event to the webservice.
+1. **With GitLab Webhooks, and Slack Incoming webhook**. GitLab will send directly an event to the webservice.
+
+Now, the service has an event and it's ready to read it to then use the Slack bot to notify the user.
+
+### What it does with the event?
+1. The service will try to find one or more mentions `@that.guy` in the comment sent by the author.
+
+    _This Guy (this.guy) commented on merge request !1 in Project / Repo: MR_
+    >    _@that.guy I need your review._
+
+1. It will fetch from **GitLab** Open API, the user info to get its fullname. (_See the [**What's missing?**](#whats-missing), to retrieve the email directly_)
+   1. It will format his fullname to a user email alias using `formatFullnameToUserEmail()` and the environment variable `USER_EMAIL_SPACE_REPLACER` to a lowercase format without diacritic, e.g.: Nathan Côté-Dumais → nathan.cote-dumais.
+   1. It will then use the environment variable `USER_EMAIL_DOMAIN` to create a valid email, e.g.: nathan.cote-dumais → `nathan.cote-dumais@business.com`
+1. It will fetch from Slack API the user info using his email to then extract his userID, e.g.: `UA1BCDEF`.
+1. Finally, it will publish a private message notification to Slack to this user using his `userID`. The user will receive a notification from the bot itself in the Slack app section. _The message can be customized_     
+    > **Jeff Bezos** mentionned you on _Amazon : AMZ-1337 Fixed bad merge_   
+        `*{{author}}* mentionned you on _{{repo}}: {{mergeRequest}}_`
 
 ---
 
